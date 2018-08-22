@@ -24,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView tv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setPermission();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -32,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void backup(View view){
-        setPermission();
         String t = et.getText().toString();
 
         try {
@@ -78,15 +79,18 @@ public class MainActivity extends AppCompatActivity {
 
     // 권한 확인 후 대화상자 보여줌
     private void setPermission() {
-        int permissionInfo = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int w_permissionInfo = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int r_permissionInfo = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
 
-        if(permissionInfo == PackageManager.PERMISSION_GRANTED)
-            Toast.makeText(getApplicationContext(), "SDCard 쓰기 권한 있음", Toast.LENGTH_SHORT).show();
+        if(w_permissionInfo == PackageManager.PERMISSION_GRANTED && r_permissionInfo == PackageManager.PERMISSION_GRANTED)
+            Toast.makeText(getApplicationContext(), "SDCard 읽기 쓰기 권한 있음", Toast.LENGTH_SHORT).show();
         else{
             // 재요청
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE))
                 Toast.makeText(getApplicationContext(), "권한의 필요성 설명", Toast.LENGTH_SHORT).show();
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 100);
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE))
+                Toast.makeText(getApplicationContext(), "권한의 필요성 설명", Toast.LENGTH_SHORT).show();
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
         }
     }
 
@@ -97,9 +101,9 @@ public class MainActivity extends AppCompatActivity {
 
         if(requestCode == 100){
             if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                str = "SDCard 쓰기권한 승인";
+                str = "SDCard 읽쓰 권한 승인";
             else
-                str = "SDCard 쓰기권한 거부";
+                str = "SDCard 읽쓰 권한 거부";
             Toast.makeText(getApplicationContext(), str, Toast.LENGTH_SHORT).show();
         }
     }
